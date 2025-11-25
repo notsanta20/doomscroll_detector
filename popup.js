@@ -1,14 +1,24 @@
-import { getActiveTabURL } from "./utils.js";
+const scrollInput = document.querySelector(".scroll-value");
+const currentValue = document.querySelector(".current-value");
 
-const scrollInput = document.querySelector(".scroll-input");
+chrome.storage.local.get(["scrollIntensity"], (result) => {
+  const value = result.scrollIntensity | 1;
+  scrollInput.value = value;
+  currentValue.textContent = value;
+});
 
 scrollInput.addEventListener("change", async (e) => {
-  const activeTab = await getActiveTabURL();
-  const scrollValue = e.target.value;
-  scrollInput.value = scrollValue;
+  const value = e.target.value;
+  currentValue.textContent = value;
 
-  chrome.tabs.sendMessage(activeTab.id, {
-    type: "SCROLL",
-    value: scrollValue,
+  chrome.storage.local.set({ scrollIntensity: value });
+
+  chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+    if (tabs[0]) {
+      chrome.tabs.sendMessage(tabs[0].id, {
+        type: "updateThreshold",
+        value: value,
+      });
+    }
   });
 });
