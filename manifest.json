@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "doomscroll detector",
-  "description": "detect doomscroll on social websites",
+  "description": "detects excessive scrolling and alerts you to take a break",
   "version": "1.0",
   "author": "santa",
   "permissions": ["activeTab", "storage"],
@@ -14,7 +14,8 @@
         "https://www.linkedin.com/*",
         "https://www.tiktok.com/*"
       ],
-      "js": ["content.js"]
+      "js": ["content.js"],
+      "css": ["content.css"]
     }
   ],
   "action": {
@@ -22,8 +23,13 @@
     "default_popup": "popup.html",
     "default_icon": {
       "16": "assets/icon.png",
-      "24": "assets/icon.png",
-      "32": "assets/icon.png"
+      "48": "assets/icon.png",
+      "128": "assets/icon.png"
     }
+  },
+  "icons": {
+    "16": "assets/icon.png",
+    "48": "assets/icon.png",
+    "128": "assets/icon.png"
   }
 }
