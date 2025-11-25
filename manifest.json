@@ -4,17 +4,7 @@
   "description": "detect doomscroll on social websites",
   "version": "1.0",
   "author": "santa",
-  "permissions": ["tabs", "storage"],
-  "host_permissions": [
-    "https://www.reddit.com/*",
-    "https://www.instagram.com/*",
-    "https://www.x.com/*",
-    "https://www.linkedin.com/*",
-    "https://www.tiktok.com/*"
-  ],
-  "background": {
-    "service_worker": "background.js"
-  },
+  "permissions": ["activeTab", "storage"],
   "content_scripts": [
     {
       "matches": [
