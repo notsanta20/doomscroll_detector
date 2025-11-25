@@ -1,41 +1,66 @@
 (() => {
-  const SCROLL_THRESHOLD = 1000;
-  let scrollLimit = SCROLL_THRESHOLD * 1;
-  let scroll = window.scrollY;
-  let count = 0;
+  const SCROLL_THRESHOLD = 10000; // 10k pixels
+  const TIME_LIMIT = 1000 * 60 * 5; //5 min
+
+  let scrollDistance = 0;
+  let scrollLimit = 0;
+  let timer = null;
+  let isModalOpen = false;
   let modal;
 
-  //listen for new website id and scroll input
-  chrome.runtime.onMessage.addListener((obj, sender, response) => {
-    const { type, webId, value } = obj;
+  // load scroll intensity from storage and update scroll limit
+  chrome.storage.local.get(["scrollIntensity"], (result) => {
+    const value = result.scrollIntensity | 1;
+    scrollLimit = SCROLL_THRESHOLD * value;
+  });
 
-    if (type === "NEW") {
-      console.log(webId);
-    }
-
-    if (type === "SCROLL") {
-      scrollLimit = SCROLL_THRESHOLD * value;
+  // listen scroll intensity change and update scroll limit
+  chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+    if (request.type === "updateThreshold") {
+      const newThreshold = request.value;
+      scrollLimit = SCROLL_THRESHOLD * newThreshold;
     }
   });
 
-  //listen for scroll
+  // listen scroll
   window.onscroll = () => {
-    scroll = window.scrollY;
+    scrollDistance += window.scrollY % scrollLimit;
+    console.log(scrollDistance + " " + scrollLimit);
 
-    if (scroll > scrollLimit) {
+    if (scrollDistance > scrollLimit) {
       //show modal only once per threshold
-      count++;
-      if (count == 1) {
+      if (!isModalOpen) {
         showModal();
       }
     }
   };
 
+  setTimer();
+
+  function setTimer() {
+    if (timer) {
+      clearTimeout(timer);
+    } else {
+      timer = setTimeout(() => {
+        if (!isModalOpen) {
+          showModal();
+        }
+      }, TIME_LIMIT);
+    }
+  }
+
+  // reset scroll values
+  function reset() {
+    isModalOpen = false;
+    scrollDistance = 0;
+  }
+
   //get modal and insert into body
   function showModal() {
+    isModalOpen = true;
     const body = document.querySelector("body");
     body.style.overflow = "hidden";
-    window.scrollTo(0, scroll);
+    window.scrollTo(0, window.scrollY);
 
     const roast = getRandomRoast();
     modal = createModal(roast);
@@ -52,62 +77,25 @@
     const closeBtn = document.createElement("button");
     const resetBtn = document.createElement("button");
 
-    mainContainer.style.backgroundColor = "rgba(50, 50, 50, 0.65)";
-    mainContainer.style.width = "100vw";
-    mainContainer.style.height = "100vh";
-    mainContainer.style.position = "fixed";
-    mainContainer.style.left = "0";
-    mainContainer.style.top = "0";
-    mainContainer.style.zIndex = "99";
+    mainContainer.classList.add("modal-main-container");
 
-    container.style.position = "fixed";
-    container.style.display = "flex";
-    container.style.flexDirection = "column";
-    container.style.justifyContent = "center";
-    container.style.alignItems = "center";
-    container.style.gap = "15px";
-    container.style.width = "350px";
-    container.style.height = "150px";
-    container.style.backgroundColor = "black";
-    container.style.color = "white";
-    container.style.padding = "25px";
-    container.style.borderRadius = "15px";
-    container.style.left = "50%";
-    container.style.top = "50%";
-    container.style.transform = "translate(-50%, -50%)";
-    container.style.fontWeight = "bold";
-    container.style.boxShadow = "5px 5px 25px rgb(0,0,0,0.75)";
+    container.classList.add("modal-container");
 
-    txt.style.flex = "auto";
-    txt.style.display = "flex";
-    txt.style.textAlign = "center";
-    txt.style.fontSize = "1rem";
-    txt.style.alignItems = "center";
+    txt.classList.add("modal-txt");
     txt.textContent = message;
 
-    btnContainer.style.display = "grid";
-    btnContainer.style.gridTemplateColumns = "1fr 1fr";
-    btnContainer.style.gap = "15px";
+    btnContainer.classList.add("modal-btn-container");
 
-    resetBtn.style.padding = "0px 15px";
-    resetBtn.style.color = "white";
-    resetBtn.style.backgroundColor = "#e9564a";
-    resetBtn.style.borderRadius = "8px";
-    resetBtn.style.fontSize = "1rem";
+    resetBtn.classList.add("modal-reset-btn");
     resetBtn.textContent = "Reset";
     resetBtn.addEventListener("click", () => {
       const body = document.querySelector("body");
-      scrollLimit *= 2;
-      count = 0;
       body.removeChild(modal);
       body.style.overflow = "visible";
+      reset();
     });
 
-    closeBtn.style.padding = "0px 15px";
-    closeBtn.style.color = "black";
-    closeBtn.style.backgroundColor = "#90EE90";
-    closeBtn.style.borderRadius = "8px";
-    closeBtn.style.fontSize = "1rem";
+    closeBtn.classList.add("modal-close-btn");
     closeBtn.textContent = "Touch grass";
     closeBtn.addEventListener("click", () => {
       window.location.href = getRandomWebsite();
