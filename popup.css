@@ -3,8 +3,8 @@ html {
   color: white;
 }
 
-.main-container {
-  width: 120px;
+body {
+  width: 200px;
   padding: 5px 10px;
 }
 
@@ -16,15 +16,4 @@ html {
 
 .scroll-label {
   font-size: 1rem;
-}
-
-.scroll-input {
-  font-size: 1rem;
-  padding: 2px;
-  text-align: center;
-  background-color: black;
-  color: white;
-  border: 1px solid white;
-  border-radius: 5px;
-  outline: none;
 }
