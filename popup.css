@@ -1,0 +1,30 @@
+html {
+  background-color: black;
+  color: white;
+}
+
+.main-container {
+  width: 120px;
+  padding: 5px 10px;
+}
+
+.input-container {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.scroll-label {
+  font-size: 1rem;
+}
+
+.scroll-input {
+  font-size: 1rem;
+  padding: 2px;
+  text-align: center;
+  background-color: black;
+  color: white;
+  border: 1px solid white;
+  border-radius: 5px;
+  outline: none;
+}

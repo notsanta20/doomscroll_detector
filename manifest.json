@@ -1,0 +1,39 @@
+{
+  "manifest_version": 3,
+  "name": "doomscroll detector",
+  "description": "detect doomscroll on social websites",
+  "version": "1.0",
+  "author": "santa",
+  "permissions": ["tabs", "storage"],
+  "host_permissions": [
+    "https://www.reddit.com/*",
+    "https://www.instagram.com/*",
+    "https://www.x.com/*",
+    "https://www.linkedin.com/*",
+    "https://www.tiktok.com/*"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "https://www.reddit.com/*",
+        "https://www.instagram.com/*",
+        "https://www.x.com/*",
+        "https://www.linkedin.com/*",
+        "https://www.tiktok.com/*"
+      ],
+      "js": ["content.js"]
+    }
+  ],
+  "action": {
+    "default_title": "DoomScroll Detector",
+    "default_popup": "popup.html",
+    "default_icon": {
+      "16": "assets/icon.png",
+      "24": "assets/icon.png",
+      "32": "assets/icon.png"
+    }
+  }
+}
